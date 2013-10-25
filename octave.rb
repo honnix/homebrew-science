@@ -54,6 +54,11 @@ class Octave < Formula
     flags.join(" ")
   end
 
+  def patches
+    # the generated code to check tr1/unordered_map in "configure" is not correct
+    DATA
+  end
+
   def install
     ENV.m64 if MacOS.prefer_64_bit?
     ENV.append_to_cflags "-D_REENTRANT"
@@ -100,3 +105,22 @@ class Octave < Formula
     s = native_caveats + s unless build.include? 'without-fltk'
   end
 end
+
+__END__
+diff --git a/configure b/configure
+--- a/configure
++++ b/configure
+@@ -58244,11 +58244,11 @@
+    int F77_DUMMY_MAIN() { return 1; }
+ 
+ #endif
++using std::unordered_map;
+ int
+ main ()
+ {
+ 
+-      std::unordered_map m;
+ 
+   ;
+   return 0;
+
